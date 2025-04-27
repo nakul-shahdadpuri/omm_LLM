@@ -1,6 +1,10 @@
 openai
 faiss-cpu
+python-dotenv
+unstructured
+PyMuPDF
+docx2txt
+langchain
 fastapi
 uvicorn
-PyPDF2
-python-dotenv
+tqdm
