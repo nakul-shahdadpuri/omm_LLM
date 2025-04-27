@@ -1,10 +1,9 @@
 import os
 from dotenv import load_dotenv
-from langchain.vectorstores import FAISS
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
-
 from app.utils import load_all_documents, chunk_documents
 
 load_dotenv()
@@ -14,14 +13,18 @@ embedding_model = OpenAIEmbeddings()
 index_path = "index/vectordb"
 
 def build_or_load_index(data_dir):
-    if os.path.exists(index_path):
-        return FAISS.load_local(index_path, embedding_model)
+    faiss_file = os.path.join(index_path, "index.faiss")
+    if os.path.exists(faiss_file):
+        return FAISS.load_local(index_path, embedding_model, allow_dangerous_deserialization=True)
+    
+    # Build new index from scratch
     texts = load_all_documents(data_dir)
     chunks = chunk_documents(texts)
     docs = [f"[{fname}]\n{chunk}" for fname, chunk in chunks]
     vectordb = FAISS.from_texts(docs, embedding_model)
     vectordb.save_local(index_path)
     return vectordb
+
 
 def get_qa_chain():
     db = build_or_load_index("data/raw_docs")

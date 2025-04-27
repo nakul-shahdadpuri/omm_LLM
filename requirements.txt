@@ -4,7 +4,8 @@ python-dotenv
 unstructured
 PyMuPDF
 docx2txt
-langchain
 fastapi
 uvicorn
 tqdm
+langchain>=0.1.13
+langchain-community>=0.0.3

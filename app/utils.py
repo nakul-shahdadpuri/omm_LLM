@@ -1,11 +1,12 @@
 import os
 import docx2txt
-from PyMuPDF import open as pdf_open
+import fitz 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def extract_text_from_pdf(file_path):
-    doc = pdf_open(file_path)
+    doc = fitz.open(file_path)
     return "\n".join(page.get_text() for page in doc)
+
 
 def extract_text_from_docx(file_path):
     return docx2txt.process(file_path)
