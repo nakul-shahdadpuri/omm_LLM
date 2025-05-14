@@ -1,0 +1,17 @@
+/* Reset Tailwind or global styles from interfering with PDF layout */
+.react-pdf__Page__textContent {
+    all: initial !important;       /* 💥 This resets all Tailwind/global interference */
+    direction: ltr;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: auto;
+    z-index: 1;
+  }
+  
+  .react-pdf__Page__textContent span {
+    all: unset !important;
+    user-select: text;
+    color: black;
+  }
+  

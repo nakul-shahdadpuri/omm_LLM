@@ -1,0 +1,16 @@
+.react-pdf__Page__textContent {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: auto;
+  mix-blend-mode: normal;
+}
+
+.react-pdf__Page__textContent span {
+  background: none !important;
+  user-select: text;
+  color: inherit !important;        /* ✅ Let it match layout layer */
+  font-family: inherit !important; /* ✅ Avoid mismatch */
+  font-size: inherit !important;
+}
