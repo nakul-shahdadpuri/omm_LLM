@@ -3,53 +3,62 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function ResumeQAApp() {
-  // State for user input question and AI answer
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState(null);
-
-  // State to manage list of documents and selected document
-  const [documents, setDocuments] = useState([
-    "Resume_Nakul.pdf",
-    "Company_Roles.md",
-    "Skills_Matrix.xlsx",
-    "Internal_Job_Descriptions.docx",
-    "Performance_Reviews.json",
-  ]);
+  const [documents, setDocuments] = useState([]);
   const [selectedDoc, setSelectedDoc] = useState(null);
-
-  // Theme mode toggle
   const [darkMode, setDarkMode] = useState(false);
 
-  // 🔗 MAIN PLACE TO CONNECT TO YOUR BACKEND API
-  const askQuestion = async () => {
-    // Display temporary loading message
-    setAnswer({ text: "Loading...", sourceSnippet: "" });
+  // Fetch document list on mount
+  useEffect(() => {
+    fetch("http://localhost:5000/api/documents")
+      .then(res => res.json())
+      .then(data => setDocuments(data.documents || []))
+      .catch(err => console.error("Failed to fetch documents", err));
+  }, []);
 
+  // Fetch content of selected document
+  const fetchDocumentContent = (doc) => {
+    fetch(`http://localhost:5000/api/documents/${doc.name}`)
+      .then(res => res.json())
+      .then(data => setSelectedDoc({ ...doc, content: data.content }))
+      .catch(err => console.error("Failed to fetch document content", err));
+  };
+
+  const askQuestion = async () => {
+    setAnswer({ text: "Loading...", sourceSnippet: "" });
     try {
-      // 🔽 Replace this endpoint with your actual backend API URL
-      const res = await fetch("/api/ask", {
+      const res = await fetch("http://localhost:5000/api/ask", {
         method: "POST",
         headers: { 'Content-Type': 'application/json' },
-        // You can also pass selectedDoc here if needed by the backend
         body: JSON.stringify({ question }),
       });
-
-      // Await API response
       const data = await res.json();
-
-      // Set response in UI
       setAnswer(data);
     } catch (error) {
-      // Handle and display error if the API call fails
-      console.error("API error:", error);
-      setAnswer({ text: "An error occurred. Please try again.", sourceSnippet: "" });
+      setAnswer({ text: "Error fetching response.", sourceSnippet: "" });
     }
   };
 
-  // Prompt user to add a new document to the list
-  const handleAddDocument = () => {
-    const newDoc = prompt("Enter document name:");
-    if (newDoc) setDocuments(prev => [...prev, newDoc]);
+  const handleAddDocument = async () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".txt,.pdf,.docx,.md";
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("http://localhost:5000/api/upload", {
+        method: "POST",
+        body: formData
+      });
+      const result = await res.json();
+      setDocuments(prev => [...prev, { name: result.file_name, file_id: result.file_id }]);
+    };
+    input.click();
   };
 
   return (
@@ -65,11 +74,7 @@ export default function ResumeQAApp() {
         <div className={`w-1/4 p-4 border-r overflow-hidden flex flex-col ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">📁 Documents</h2>
-            <Button
-              size="sm"
-              onClick={handleAddDocument}
-              className={`${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : ''}`}
-            >
+            <Button size="sm" onClick={handleAddDocument} className={`${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : ''}`}>
               ＋
             </Button>
           </div>
@@ -79,9 +84,9 @@ export default function ResumeQAApp() {
                 <li
                   key={index}
                   className={`p-2 rounded cursor-pointer ${darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'}`}
-                  onClick={() => setSelectedDoc(doc)}
+                  onClick={() => fetchDocumentContent(doc)}
                 >
-                  {doc}
+                  {doc.name}
                 </li>
               ))}
             </ul>
@@ -125,11 +130,11 @@ export default function ResumeQAApp() {
         {selectedDoc && (
           <div className={`w-1/3 p-4 border-l overflow-auto ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
             <div className="flex justify-between items-center mb-2">
-              <h2 className="font-medium">📄 {selectedDoc}</h2>
+              <h2 className="font-medium">📄 {selectedDoc.name}</h2>
               <Button size="sm" variant="ghost" onClick={() => setSelectedDoc(null)}>✖</Button>
             </div>
             <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-              Preview of the document content would go here (e.g. fetched summary, snippet, or inline text viewer).
+              {selectedDoc.content}
             </p>
           </div>
         )}
