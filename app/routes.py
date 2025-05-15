@@ -2,14 +2,17 @@ from flask import request, jsonify
 import os
 import traceback
 from openai import OpenAI
+import time
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # In-memory store for uploaded file metadata
 UPLOADED_FILES = []
 
-# Register app routes
+# Hardcoded vector store ID
+VECTOR_STORE_ID = "vs_6824f56c052081919f25de6844131737"
 
+# Register app routes
 def register_routes(app):
 
     @app.route("/api/upload", methods=["POST"])
@@ -23,7 +26,10 @@ def register_routes(app):
 
         try:
             with open(temp_path, "rb") as f:
-                uploaded_file = client.files.create(file=f, purpose="assistants")
+                uploaded_file = client.vector_stores.files.upload_and_poll(
+                    vector_store_id=VECTOR_STORE_ID,
+                    file=f
+                )
             file_id = uploaded_file.id
 
             UPLOADED_FILES.append({"file_id": file_id, "name": file.filename})
@@ -39,7 +45,16 @@ def register_routes(app):
 
     @app.route("/api/documents", methods=["GET"])
     def list_docs():
-        return jsonify({"documents": UPLOADED_FILES})
+        try:
+            vector_files = client.vector_stores.files.list(vector_store_id=VECTOR_STORE_ID)
+            documents = []
+            for vf in vector_files.data:
+                file_info = client.files.retrieve(vf.file_id)
+                documents.append({"file_id": vf.file_id, "name": file_info.filename})
+            return jsonify({"documents": documents})
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({"error": f"Failed to retrieve documents: {str(e)}"}), 500
 
     @app.route("/api/documents/<filename>", methods=["GET"])
     def view_document(filename):
@@ -47,7 +62,10 @@ def register_routes(app):
         if not match:
             return jsonify({"error": "File not found"}), 404
 
-        return jsonify({"filename": filename, "content": "Viewing document content is not supported for files uploaded with purpose='assistants'."})
+        return jsonify({
+            "filename": filename,
+            "content": "Viewing document content is not supported for files uploaded to vector stores."
+        })
 
     @app.route("/api/ask", methods=["POST"])
     def ask_question():
@@ -74,7 +92,6 @@ def register_routes(app):
             )
             print("Run created:", run.id)
 
-            import time
             while True:
                 status = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
                 if status.status == "completed":
