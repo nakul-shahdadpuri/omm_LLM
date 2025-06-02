@@ -1,10 +1,13 @@
 from flask import request, jsonify
 import os
 import traceback
-from openai import OpenAI
 import time
+from openai import OpenAI
 
-client = OpenAI()
+# Safe client instantiation (no 'proxies' error)
+client = OpenAI(
+    api_key=os.environ.get("OPENAI_API_KEY")
+)
 
 # In-memory store for uploaded file metadata
 UPLOADED_FILES = []
