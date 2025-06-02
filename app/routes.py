@@ -4,18 +4,12 @@ import traceback
 import time
 from openai import OpenAI
 
-# Safe client instantiation (no 'proxies' error)
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY")
-)
+# ✅ Correct usage for OpenAI v1.x
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-# In-memory store for uploaded file metadata
 UPLOADED_FILES = []
-
-# Hardcoded vector store ID
 VECTOR_STORE_ID = "vs_6824f56c052081919f25de6844131737"
 
-# Register app routes
 def register_routes(app):
 
     @app.route("/api/upload", methods=["POST"])
@@ -34,9 +28,7 @@ def register_routes(app):
                     file=f
                 )
             file_id = uploaded_file.id
-
             UPLOADED_FILES.append({"file_id": file_id, "name": file.filename})
-
             return jsonify({
                 "message": "File uploaded successfully",
                 "file_name": file.filename,
@@ -96,9 +88,11 @@ def register_routes(app):
             print("Run created:", run.id)
 
             while True:
-                status = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+                status = client.beta.threads.runs.retrieve(
+                    thread_id=thread.id,
+                    run_id=run.id
+                )
                 if status.status == "completed":
-                    print("Run complete")
                     break
                 elif status.status == "failed":
                     raise Exception("Run failed")
