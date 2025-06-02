@@ -4,7 +4,7 @@ import traceback
 from openai import OpenAI
 import time
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI()
 
 # In-memory store for uploaded file metadata
 UPLOADED_FILES = []
