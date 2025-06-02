@@ -1,13 +1,14 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./components/ui/LoginPage";
-import StudyApp from "./components/ui/StudyApp";
+import LoginPage from "@/components/ui/LoginPage";
+import StudyApp from "@/components/ui/StudyApp";
 
-function PrivateRoute({ children }: { children: JSX.Element }) {
+const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = localStorage.getItem("authenticated") === "true";
-  return isAuthenticated ? children : <Navigate to="/" replace />;
-}
+  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
+};
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <Routes>
@@ -23,6 +24,6 @@ function App() {
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;

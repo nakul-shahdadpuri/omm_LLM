@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (username === "admin" && password === "password") {
       localStorage.setItem("authenticated", "true");
@@ -34,7 +34,7 @@ export default function LoginPage() {
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
           required
         />
 
@@ -42,7 +42,7 @@ export default function LoginPage() {
           type="password"
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
           required
         />
 
