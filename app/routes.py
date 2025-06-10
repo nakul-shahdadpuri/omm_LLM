@@ -4,8 +4,7 @@ import traceback
 import time
 from openai import OpenAI
 
-# ✅ Correct usage for OpenAI v1.x
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+client = OpenAI()
 
 UPLOADED_FILES = []
 VECTOR_STORE_ID = "vs_6824f56c052081919f25de6844131737"

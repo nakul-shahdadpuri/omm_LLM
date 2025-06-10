@@ -25,14 +25,14 @@ export default function ResumeQAApp() {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/documents")
+    fetch("https://omm-backend.onrender.com/api/documents")
       .then((res) => res.json())
       .then((data) => setDocuments(data.documents || []))
       .catch((err) => console.error("Failed to fetch documents", err));
   }, []);
 
   const fetchDocumentContent = (doc: DocumentMeta) => {
-    fetch(`http://localhost:5000/api/documents/${doc.name}`)
+    fetch(`https://omm-backend.onrender.com/api/documents/${doc.name}`)
       .then((res) => res.json())
       .then((data) => setSelectedDoc({ ...doc, content: data.content }))
       .catch((err) => console.error("Failed to fetch document content", err));
@@ -42,20 +42,28 @@ export default function ResumeQAApp() {
     const pendingAnswer: Answer = { question, text: "Loading...", sourceSnippet: "" };
     setAnswers((prev) => [...prev, pendingAnswer]);
     try {
-      const res = await fetch("http://localhost:5000/api/ask", {
+      const res = await fetch(`https://omm-backend.onrender.com/api/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
+  
+      if (!res.ok) {
+        const errText = await res.text(); // capture the backend error
+        throw new Error(errText);
+      }
+  
       const data = await res.json();
       setAnswers((prev) => [...prev.slice(0, -1), { ...data, question }]);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Fetch error:", error.message); // Log to browser console
       setAnswers((prev) => [
         ...prev.slice(0, -1),
         { question, text: "Error fetching response.", sourceSnippet: "" },
       ]);
     }
   };
+  
 
   const handleAddDocument = async () => {
     const input = document.createElement("input");
@@ -69,7 +77,7 @@ export default function ResumeQAApp() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("http://localhost:5000/api/upload", {
+      const res = await fetch("https://omm-backend.onrender.com/api/upload", {
         method: "POST",
         body: formData,
       });
