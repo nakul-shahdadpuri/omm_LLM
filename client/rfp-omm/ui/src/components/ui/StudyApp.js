@@ -22,7 +22,7 @@ export default function ResumeQAApp() {
 
     useEffect(() => {
         // Fetch documents from the new API endpoint
-        fetch("http://localhost:5000/get_document_list")
+        fetch("https://omm-backend.onrender.com/get_document_list")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Network response was not ok");
@@ -33,7 +33,7 @@ export default function ResumeQAApp() {
             .catch((err) => console.error("Failed to fetch documents", err));
 
         // Fetch historical conversations from the new API endpoint
-        fetch("http://localhost:5000/gethistorical")
+        fetch("https://omm-backend.onrender.com/gethistorical")
             .then((res) => {
                 if (!res.ok) {
                     throw new Error("Network response was not ok");
@@ -45,7 +45,7 @@ export default function ResumeQAApp() {
     }, []);
 
     const fetchDocumentContent = (doc) => {
-        fetch(`http://localhost:5000/api/documents/${doc.name}`)
+        fetch(`https://omm-backend.onrender.com/api/documents/${doc.name}`)
             .then((res) => res.json())
             .then((data) => setSelectedDoc(Object.assign(Object.assign({}, doc), { content: data.content })))
             .catch((err) => console.error("Failed to fetch document content", err));
@@ -56,7 +56,7 @@ export default function ResumeQAApp() {
         setAnswers((prev) => [...prev, pendingAnswer]);
         setConversationHistory((prev) => [...prev, { question, answer: "Loading..." }]); // Add to history
         try {
-            const res = yield fetch("http://localhost:5000/api/ask", {
+            const res = yield fetch("https://omm-backend.onrender.com/api/ask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ question }),
@@ -90,7 +90,7 @@ export default function ResumeQAApp() {
                 return;
             const formData = new FormData();
             formData.append("file", file);
-            const res = yield fetch("http://localhost:5000/api/upload", {
+            const res = yield fetch("https://omm-backend.onrender.com/api/upload", {
                 method: "POST",
                 body: formData,
             });
