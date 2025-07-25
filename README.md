@@ -1,12 +1,14 @@
 # omm_LLM
 
-A RAG (Retrieval-Augmented Generation) based LLM for Omm's Enterprise documents search and retrieval system. This application provides an intelligent document search and question-answering system using OpenAI's GPT models combined with vector storage for enterprise document management.
+> ⚠️ **IMPORTANT**: The Flask backend (`/app` directory) is **DEPRECATED** and no longer maintained. This project now focuses on the React frontend application located in `/client/rfp-omm/ui/`.
+
+A React-based frontend application for enterprise document search and retrieval. Originally designed as a RAG (Retrieval-Augmented Generation) system, this project now provides a modern TypeScript React interface for document management and AI-powered interactions.
 
 ## 🏗️ Architecture
 
-The application follows a modern full-stack architecture:
+The application follows a modern frontend-focused architecture:
 
-- **Backend**: Flask-based REST API with OpenAI integration
+- **Backend**: ⚠️ **DEPRECATED** - Flask-based REST API (legacy, no longer maintained)
 - **Frontend**: React + TypeScript with Vite, featuring a modern UI with Tailwind CSS
 - **Document Processing**: Vector store implementation using OpenAI embeddings
 - **Authentication**: Simple localStorage-based authentication system
@@ -15,11 +17,11 @@ The application follows a modern full-stack architecture:
 
 ```
 omm_LLM/
-├── app/                          # Backend Flask application
-│   ├── server.py                # Main Flask server
-│   ├── routes.py                # API endpoints and business logic
-│   └── __init__.py             # Package initialization
-├── client/rfp-omm/ui/          # Frontend React application
+├── app/                          # ⚠️ DEPRECATED - Backend Flask application
+│   ├── server.py                # DEPRECATED - Main Flask server
+│   ├── routes.py                # DEPRECATED - API endpoints and business logic
+│   └── __init__.py             # DEPRECATED - Package initialization
+├── client/rfp-omm/ui/          # Frontend React application (MAIN)
 │   ├── src/
 │   │   ├── components/ui/       # UI components
 │   │   │   ├── StudyApp.tsx    # Main application interface
@@ -54,13 +56,7 @@ omm_LLM/
 
 ## 🛠️ Technology Stack
 
-### Backend
-- **Flask** - Web framework
-- **OpenAI** - GPT models and embeddings
-- **Flask-CORS** - Cross-origin resource sharing
-- **Python 3.x** - Programming language
-
-### Frontend
+### Frontend (Primary Application)
 - **React 19** - UI framework
 - **TypeScript** - Type-safe JavaScript
 - **Vite** - Build tool and dev server
@@ -68,17 +64,23 @@ omm_LLM/
 - **React Router** - Client-side routing
 - **Lucide React** - Icon library
 
-### Document Processing
-- **PyMuPDF** - PDF document loading
-- **LangChain** - Document processing and text splitting
-- **FAISS** - Vector similarity search
-- **OpenAI Embeddings** - Document vectorization
+### Legacy Backend (DEPRECATED) ⚠️
+- **Flask** - Web framework (no longer maintained)
+- **OpenAI** - GPT models and embeddings (legacy implementation)
+- **Flask-CORS** - Cross-origin resource sharing
+- **Python 3.x** - Programming language
+
+### Document Processing (Legacy) ⚠️
+- **PyMuPDF** - PDF document loading (deprecated)
+- **LangChain** - Document processing and text splitting (deprecated)
+- **FAISS** - Vector similarity search (deprecated)
+- **OpenAI Embeddings** - Document vectorization (deprecated)
 
 ## 📋 Prerequisites
 
-- **Python 3.8+**
 - **Node.js 16+** and npm
-- **OpenAI API Key**
+- ~~**Python 3.8+**~~ (deprecated - backend no longer needed)
+- ~~**OpenAI API Key**~~ (deprecated - handled differently in frontend)
 
 ## ⚙️ Installation & Setup
 
@@ -88,7 +90,30 @@ git clone <repository-url>
 cd omm_LLM
 ```
 
-### 2. Backend Setup
+### 2. Frontend Setup (Primary Application)
+
+#### Navigate to Frontend Directory
+```bash
+cd client/rfp-omm/ui
+```
+
+#### Install Node Dependencies
+```bash
+npm install
+```
+
+#### Start the Development Server
+```bash
+npm run dev
+```
+The application will run on `http://localhost:5173`
+
+### 3. Legacy Backend Setup (DEPRECATED) ⚠️
+
+> **Note**: The Flask backend is deprecated and no longer maintained. The frontend now handles all functionality.
+
+<details>
+<summary>Click to view legacy backend setup (not recommended)</summary>
 
 #### Install Python Dependencies
 ```bash
@@ -108,36 +133,31 @@ python server.py
 ```
 The backend will run on `http://localhost:5000`
 
-### 3. Frontend Setup
-
-#### Navigate to Frontend Directory
-```bash
-cd client/rfp-omm/ui
-```
-
-#### Install Node Dependencies
-```bash
-npm install
-```
-
-#### Start the Development Server
-```bash
-npm run dev
-```
-The frontend will run on `http://localhost:5173`
+</details>
 
 ## 🔧 Configuration
 
-### Backend Configuration
+### Frontend Configuration
+- **API Endpoint**: Configure base URL in `StudyApp.tsx` for production
+- **Authentication**: Currently uses localStorage-based authentication
+- **OpenAI Integration**: Handled directly in frontend components
+
+### Legacy Backend Configuration (DEPRECATED) ⚠️
+<details>
+<summary>Click to view deprecated backend configuration</summary>
+
 - **Vector Store ID**: Update `VECTOR_STORE_ID` in `app/routes.py`
 - **Assistant ID**: Update `assistant_id` in the ask endpoint
 - **API Base URL**: Configure in frontend components for production deployment
 
-### Frontend Configuration
-- **API Endpoint**: Update base URL in `StudyApp.tsx` for production
-- **Authentication**: Currently uses localStorage-based authentication
+</details>
 
-## 📖 API Documentation
+## 📖 API Documentation (DEPRECATED) ⚠️
+
+> **Note**: The following API documentation is for the deprecated Flask backend. The frontend now handles all operations directly.
+
+<details>
+<summary>Click to view legacy API documentation</summary>
 
 ### Upload Document
 ```http
@@ -204,6 +224,8 @@ Content-Type: application/json
 }
 ```
 
+</details>
+
 ## 🎯 Usage
 
 ### For End Users
@@ -214,39 +236,47 @@ Content-Type: application/json
 5. **Browse Documents**: View and manage uploaded documents
 
 ### For Developers
-1. **Vector Store Setup**: Use `scripts/build_vector_store.py` to initialize vector storage
-2. **Document Processing**: Utilize `utils/load_documents.py` for document handling
-3. **API Integration**: Extend the REST API by adding new routes in `app/routes.py`
-4. **UI Components**: Create new React components in `client/rfp-omm/ui/src/components/`
+1. **UI Components**: Create new React components in `client/rfp-omm/ui/src/components/`
+2. **Frontend Integration**: Extend the React application with new features
+3. **State Management**: Manage application state within React components
+4. ~~**Vector Store Setup**: Use `scripts/build_vector_store.py`~~ (deprecated)
+5. ~~**API Integration**: Extend the REST API by adding new routes**~~ (deprecated)
 
 ## 🏃‍♂️ Running in Production
 
-### Backend Deployment
+### Frontend Deployment (Primary)
+1. Build the production bundle:
+```bash
+npm run build
+```
+2. Serve the built files using a web server like Nginx or deploy to platforms like Vercel, Netlify
+
+### Legacy Backend Deployment (DEPRECATED) ⚠️
+<details>
+<summary>Click to view deprecated backend deployment</summary>
+
 1. Set environment variables for production
 2. Use a production WSGI server like Gunicorn:
 ```bash
 gunicorn -w 4 -b 0.0.0.0:8000 app.server:create_app()
 ```
 
-### Frontend Deployment
-1. Build the production bundle:
-```bash
-npm run build
-```
-2. Serve the built files using a web server like Nginx
+</details>
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
-- **OpenAI API Key**: Ensure your API key is valid and has sufficient credits
-- **Vector Store**: Verify the vector store ID exists in your OpenAI account
-- **CORS Issues**: Check that Flask-CORS is properly configured
-- **File Upload**: Ensure proper file permissions for temporary file storage
+- **Node.js Dependencies**: Ensure all npm packages are installed correctly
+- **Build Issues**: Clear npm cache and reinstall dependencies if needed
+- **Browser Compatibility**: Use modern browsers with ES6+ support
+- ~~**OpenAI API Key**: Legacy backend issue~~ (deprecated)
+- ~~**CORS Issues**: Legacy backend issue~~ (deprecated)
 
 ### Debug Mode
-- Backend runs in debug mode by default for development
 - Check browser console for frontend errors
-- Monitor Flask logs for backend issues
+- Use React Developer Tools for component debugging
+- Monitor network requests in browser DevTools
+- ~~Monitor Flask logs~~ (deprecated - backend no longer used)
 
 ## 🤝 Contributing
 
